@@ -160,6 +160,7 @@ const translations = {
     translated: 'Translated',
     translate: 'Translate news',
     latestNews: 'News & Updates',
+    newsHeroSubtitle: 'The latest news, analysis, and trends in cybersecurity.',
     cookieConsent: 'This site uses cookies to enhance your experience.',
     accept: 'Accept',
     previous: 'Previous',
