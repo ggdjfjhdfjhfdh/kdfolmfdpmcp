@@ -1,0 +1,458 @@
+import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
+import fs from 'fs';
+import path from 'path';
+
+// Tipado para las noticias que devolveremos
+interface NewsItem {
+  title: string;
+  rewrittenTitle: string;
+  link: string;
+  source: string;
+  date: string;
+}
+
+interface CachedArticle {
+  title: string;
+  content: string;
+  date: string;
+}
+
+interface NewsArticle {
+  title: string;
+  source: { name: string };
+  publishedAt: string;
+  description: string;
+  url: string;
+}
+
+// --- Configuración --- 
+const newsApiKey = process.env.NEWS_API_KEY;
+const openaiApiKey = process.env.OPENAI_API_KEY;
+
+// Cola y control de tasa
+const MAX_CONCURRENT_REQUESTS = 2;
+const REQUEST_INTERVAL_MS = 1000; // 1 segundo entre peticiones
+let activeRequests = 0;
+let lastRequestTime = 0;
+
+async function throttledOpenAIRequest(messages: any[]) {
+  // Esperar si hay demasiadas peticiones activas
+  while (activeRequests >= MAX_CONCURRENT_REQUESTS) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  
+  // Control de tasa
+  const now = Date.now();
+  const timeSinceLast = now - lastRequestTime;
+  if (timeSinceLast < REQUEST_INTERVAL_MS) {
+    await new Promise(resolve => setTimeout(resolve, REQUEST_INTERVAL_MS - timeSinceLast));
+  }
+  
+  activeRequests++;
+  lastRequestTime = Date.now();
+  
+  try {
+    const openai = new OpenAI({
+      apiKey: openaiApiKey
+    });
+    
+    // Con reintentos
+    let attempts = 0;
+    const maxAttempts = 3;
+    
+    while (attempts < maxAttempts) {
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "gpt-3.5-turbo",
+          messages,
+          temperature: 0.7,
+          max_tokens: 1000
+        });
+        return completion;
+      } catch (error) {
+        attempts++;
+        if (attempts === maxAttempts) throw error;
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempts)); // Backoff
+      }
+    }
+  } finally {
+    activeRequests--;
+  }
+}
+
+const rewritePrompt = `Reescribe este titular de ciberseguridad para hacerlo más impactante y profesional, manteniendo su significado exacto y en menos de 100 caracteres. Devuelve solo el texto reescrito:
+
+"{{title}}"`;
+
+const OPENAI_MODEL = 'gpt-3.5-turbo'; // Modelo de OpenAI
+
+const MAX_DAILY_GENERATIONS = 2;
+let dailyGenerationsCount = 0;
+
+const resetDailyCounts = () => {
+  const now = new Date();
+  const nextReset = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+  
+  setTimeout(() => {
+    dailyGenerationsCount = 0;
+    resetDailyCounts();
+  }, nextReset.getTime() - now.getTime());
+};
+
+resetDailyCounts();
+
+const CACHE_PATH = path.join(process.cwd(), 'news_cache.json');
+
+const cleanContent = (content: string) => {
+  // Eliminar espacios redundantes y limpiar HTML
+  return content
+    .replace(/\s+/g, ' ')
+    .replace(/<\/?[^>]+(>|$)/g, '')
+    .trim();
+};
+
+// Declaraciones iniciales
+let loadCache: () => { generated: CachedArticle[]; lastUpdated: string };
+let saveCache: () => void;
+
+// Configuración según disponibilidad de lz-string
+try {
+  const lz = require('lz-string');
+  
+  const compress = (str: string) => lz.compressToUTF16(str) || str;
+  const decompress = (str: string) => lz.decompressFromUTF16(str) || str;
+  
+  loadCache = () => {
+    try {
+      const rawData = fs.readFileSync(CACHE_PATH, 'utf-8');
+      const compressedCache = JSON.parse(rawData);
+      
+      return {
+        ...compressedCache,
+        generated: compressedCache.generated.map((article: CachedArticle) => ({
+          ...article,
+          content: decompress(article.content) || ''
+        }))
+      };
+    } catch (e) {
+      return { generated: [], lastUpdated: new Date().toISOString() };
+    }
+  };
+  
+  saveCache = () => {
+    const optimizedCache = {
+      ...newsCache,
+      generated: newsCache.generated.map((article: CachedArticle) => ({
+        ...article,
+        content: compress(cleanContent(article.content))
+      })),
+      lastUpdated: new Date().toISOString()
+    };
+    
+    fs.writeFileSync(CACHE_PATH, JSON.stringify(optimizedCache));
+  };
+} catch (e) {
+  // Fallback sin compresión
+  loadCache = () => {
+    try {
+      return JSON.parse(fs.readFileSync(CACHE_PATH, 'utf-8'));
+    } catch (e) {
+      return { generated: [], lastUpdated: new Date().toISOString() };
+    }
+  };
+  
+  saveCache = () => {
+    fs.writeFileSync(CACHE_PATH, JSON.stringify({
+      ...newsCache,
+      generated: newsCache.generated.map((article: CachedArticle) => ({
+        ...article,
+        content: cleanContent(article.content)
+      })),
+      lastUpdated: new Date().toISOString()
+    }));
+  };
+}
+
+// Inicializar caché
+let newsCache = loadCache();
+
+// --- Handler GET ---
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const articleTitle = searchParams.get('title');
+  
+  // Handle individual article request
+  if (articleTitle) {
+    const decodedTitle = decodeURIComponent(articleTitle);
+    const cachedArticle = newsCache.generated.find(a => a.title === decodedTitle);
+    
+    if (cachedArticle) {
+      return NextResponse.json(cachedArticle);
+    }
+    
+    // Try to generate content if not in cache
+    try {
+      const completion = await throttledOpenAIRequest([{
+        role: "system",
+        content: `Genera un artículo de 500 palabras sobre: ${decodedTitle}`
+      }]);
+      
+      if (!completion) {
+        throw new Error('OpenAI request failed');
+      }
+      
+      const content = completion.choices[0]?.message?.content || 'Contenido no disponible';
+      
+      // Cache the new article
+      newsCache.generated.unshift({
+        title: decodedTitle,
+        content,
+        date: new Date().toISOString()
+      });
+      
+      saveCache();
+      
+      return NextResponse.json({
+        title: decodedTitle,
+        content,
+        date: new Date().toISOString()
+      });
+    } catch (error) {
+      return NextResponse.json({
+        error: 'Error generating article',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }, { status: 500 });
+    }
+  }
+  
+  console.log('--- Iniciando GET /api/news ---');
+
+  // Validación inicial de claves API
+  if (!newsApiKey || !openaiApiKey) {
+    console.error('Error: API keys no configuradas en .env');
+    return NextResponse.json(
+      { error: 'API keys no configuradas en .env' }, 
+      { status: 500 }
+    );
+  }
+
+  let newsData;
+  try {
+    // 1. Buscar noticias con News API
+    console.log('Buscando noticias de "ciberseguridad" con News API...');
+    const newsUrl = new URL('https://newsapi.org/v2/everything');
+    newsUrl.searchParams.set('q', `
+      cybersecurity OR ciberseguridad OR
+      "seguridad informática" OR
+      (apt AND threat) OR
+      "advanced persistent threat" OR
+      "brecha de datos" OR "data breach" OR
+      "fuga de información" OR "leak" OR
+      "CVE-2024" OR "vulnerabilidad crítica" OR
+      "zero day" OR "0day" OR
+      "exploit" OR "ataque informático"
+    `);
+    newsUrl.searchParams.set('language', 'es');
+    newsUrl.searchParams.set('sortBy', 'publishedAt');
+    newsUrl.searchParams.set('pageSize', '15');
+    newsUrl.searchParams.set('domains', 'thehackernews.com,redseguridad.com,welivesecurity.com,bleepingcomputer.com,threatpost.com');
+    newsUrl.searchParams.set('apiKey', newsApiKey);
+
+    const response = await fetch(newsUrl.toString());
+    
+    if (!response.ok) {
+      console.error('Error fetching news:', response.statusText);
+      return NextResponse.json({ error: 'Error fetching news' }, { status: 500 });
+    }
+    
+    newsData = await response.json();
+    
+    if (!newsData.articles || newsData.articles.length === 0) {
+      return NextResponse.json(
+        { 
+          message: 'No se encontraron noticias recientes', 
+          suggestion: 'Intenta con otros términos de búsqueda o revisa tu conexión a internet',
+          lastUpdated: new Date().toISOString() 
+        },
+        { status: 404 }
+      );
+    }
+
+    const newsWithContent = await Promise.all(
+      newsData.articles.map(async (news: NewsArticle) => {
+        if (dailyGenerationsCount >= MAX_DAILY_GENERATIONS) {
+          return {
+            title: news.title,
+            rewrittenTitle: '',
+            source: news.source.name,
+            date: news.publishedAt,
+            description: news.description,
+            content: newsCache.generated.find(a => a.title === news.title)?.content || news.description,
+            url: news.url
+          };
+        }
+        
+        try {
+          const completion = await throttledOpenAIRequest([{
+            role: "system",
+            content: `Genera un artículo de 500 palabras sobre: ${news.title}. ${news.description}`
+          }]);
+          
+          if (!completion) {
+            console.error('OpenAI request failed for article:', news.title);
+            return {
+              title: news.title,
+              rewrittenTitle: '',
+              source: news.source.name,
+              date: news.publishedAt,
+              description: news.description,
+              content: news.description || 'Contenido no disponible',
+              url: news.url
+            };
+          }
+          
+          let content = completion.choices[0]?.message?.content;
+          if (!content) {
+            console.warn('OpenAI returned empty content for article:', news.title);
+            content = news.description || 'Contenido no disponible';
+          }
+          
+          // Guardar en caché
+          newsCache.generated.unshift({
+            title: news.title,
+            content,
+            date: new Date().toISOString()
+          });
+          
+          // Limitar caché a 100 artículos
+          if (newsCache.generated.length > 100) {
+            newsCache.generated.pop();
+          }
+          
+          saveCache();
+          
+          return {
+            title: news.title,
+            rewrittenTitle: '',
+            source: news.source.name,
+            date: news.publishedAt,
+            description: news.description,
+            content,
+            url: news.url
+          };
+        } catch (error) {
+          return {
+            title: news.title,
+            rewrittenTitle: '',
+            source: news.source.name,
+            date: news.publishedAt,
+            description: news.description,
+            content: newsCache.generated.find(a => a.title === news.title)?.content || news.description,
+            url: news.url
+          };
+        }
+      })
+    );
+    
+    return NextResponse.json(newsWithContent);
+  } catch (error) {
+    if (!newsData) {
+      return NextResponse.json({
+        error: 'Error fetching news data',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }, { status: 500 });
+    }
+    return NextResponse.json({
+      error: 'Error al generar contenido',
+      news: newsData.articles.map((news: NewsArticle) => ({
+        title: news.title,
+        rewrittenTitle: '',
+        source: news.source.name,
+        date: news.publishedAt,
+        description: news.description,
+        content: newsCache.generated.find(a => a.title === news.title)?.content || news.description,
+        url: news.url
+      }))
+    }, { status: 200 });
+  }
+}
+
+export async function POST(request: Request) {
+  console.log('--- Iniciando POST /api/news ---');
+  
+  // Configurar headers para UTF-8
+  const headers = new Headers();
+  headers.set('Content-Type', 'application/json; charset=utf-8');
+  
+  if (!openaiApiKey) {
+    console.error('ERROR: OPENAI_API_KEY no está configurada');
+    return new NextResponse(
+      JSON.stringify({ error: 'OpenAI API key not configured' }), 
+      { status: 500, headers }
+    );
+  }
+  
+  try {
+    console.log('Verificando variables de entorno...');
+    console.log('NEWS_API_KEY:', newsApiKey ? '***redacted***' : 'UNDEFINED');
+    console.log('OPENAI_API_KEY:', openaiApiKey ? '***redacted***' : 'UNDEFINED');
+    
+    console.log('Parseando request body...');
+    const { title, description } = await request.json();
+    
+    if (!title || !description) {
+      console.error('ERROR: Faltan título o descripción en el request:', { title, description });
+      return new NextResponse(
+        JSON.stringify({ error: 'Title and description are required' }), 
+        { status: 400, headers }
+      );
+    }
+    
+    console.log('Iniciando generación de artículo para:', title);
+    
+    const completion = await throttledOpenAIRequest([{
+      role: "system",
+      content: `Eres un experto en ciberseguridad. Genera un artículo completo basado en este título: ${title} y descripción: ${description}`
+    }]);
+    
+    if (!completion) {
+      console.error('ERROR: OpenAI no devolvió respuesta');
+      return new NextResponse(
+        JSON.stringify({ error: 'OpenAI request failed' }), 
+        { status: 500, headers }
+      );
+    }
+    
+    const rawContent = completion.choices[0]?.message?.content;
+    console.log('Contenido generado:', rawContent ? rawContent.substring(0, 50) + '...' : 'UNDEFINED');
+    
+    const content = cleanContent(rawContent || '');
+    
+    // Guardar en caché
+    console.log('Guardando en caché...');
+    newsCache.generated.unshift({
+      title,
+      content,
+      date: new Date().toISOString()
+    });
+    
+    saveCache();
+    
+    console.log('Artículo creado exitosamente');
+    return new NextResponse(
+      JSON.stringify({ title, content }), 
+      { status: 201, headers }
+    );
+    
+  } catch (error) {
+    console.error('ERROR en POST /api/news:', error);
+    return new NextResponse(
+      JSON.stringify({
+        error: 'Error generating article',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }), 
+      { status: 500, headers }
+    );
+  }
+}
