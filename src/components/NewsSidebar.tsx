@@ -64,7 +64,7 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({
         </div>
         <hr className="my-3 border-gray-200" />
         <nav
-          className="flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow px-4 py-5 max-h-80 overflow-y-auto scrollbar-thin"
+          className="flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow px-4 py-5"
           aria-label="Filtrar por categoría"
         >
           <span className="text-base font-semibold text-gray-700 mb-2">Filtrar por categoría</span>
