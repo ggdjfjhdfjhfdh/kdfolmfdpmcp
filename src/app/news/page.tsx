@@ -156,7 +156,7 @@ export default function NewsPage() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row items-start bg-white min-h-screen w-full">
+    <div className="flex flex-col md:flex-row items-start bg-white min-h-screen w-full max-w-[100vw] overflow-x-hidden">
       <NewsSidebar
         news={news}
         selectedCategory={selectedCategory}
@@ -166,8 +166,8 @@ export default function NewsPage() {
         setDateFrom={setDateFrom}
         setDateTo={setDateTo}
       />
-      <main className="flex-1 p-4 md:p-8 lg:p-12 bg-white">
-        <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden mb-8">
+      <main className="flex-1 p-2 sm:p-4 md:p-8 lg:p-12 bg-white w-full">
+        <div className="relative w-full h-40 sm:h-48 md:h-64 rounded-lg sm:rounded-xl overflow-hidden mb-4 sm:mb-8">
           <img src="/news-bg.png" alt="Background" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-blue-900/30 backdrop-blur-sm z-10" aria-hidden="true"></div>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 z-20">

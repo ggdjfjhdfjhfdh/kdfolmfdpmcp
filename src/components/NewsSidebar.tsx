@@ -38,10 +38,10 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({
   uniqueCategories.sort((a, b) => (a === 'otros' ? 1 : b === 'otros' ? -1 : a.localeCompare(b, 'es')));
 
   return (
-    <aside className="hidden md:block w-64 shrink-0 mb-6 md:mb-0">
+    <aside className="hidden md:block w-64 shrink-0 mb-6 md:mb-0 p-2 sm:p-0">
       <div className="sticky top-4 md:top-8">
         {/* Filtro de fecha */}
-        <div className="flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow px-4 py-5 mb-4">
+        <div className="flex flex-col gap-2 bg-white border border-gray-200 rounded-lg sm:rounded-xl shadow px-3 sm:px-4 py-4 sm:py-5 mb-4">
           <span className="text-base font-semibold text-gray-700 mb-2">{t('filterByDate')}</span>
           <label className="flex items-center gap-2 text-gray-700 font-medium">
             {t('from')}: 
