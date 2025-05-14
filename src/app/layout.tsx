@@ -1,17 +1,13 @@
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import CookieConsent from '../components/CookieConsent';
 import Navbar from "../components/Navbar";
 import "./globals.css";
+import { metadata } from './metadata';
+import { LanguageProvider } from "../lib/LanguageContext";
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Se.Sec.Pro',
-  description: 'Soluciones integrales de ciberseguridad',
-};
-
-import { LanguageProvider } from "../lib/LanguageContext";
+export { metadata };
 
 export default function RootLayout({
   children,
