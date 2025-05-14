@@ -62,7 +62,6 @@ const translations = {
     // Home
     heroTitle1: 'Protege tu empresa con',
     heroTitle2: 'ciberseguridad inteligente',
-    heroDescription: 'Soluciones avanzadas, simples y adaptadas a tu negocio. Seguridad real con tecnología de última generación.',
     askUs: 'Pregúntanos',
     seeSolutions: 'Ver soluciones',
     missionTitle: 'Nuestra Misión',
@@ -213,7 +212,7 @@ const translations = {
     // Solutions
     heroAlt: 'Cybersecurity',
     heroTitle: 'Comprehensive Cybersecurity Solutions',
-    heroDescription: 'At Sesecpro, we offer a complete portfolio of advanced services designed to protect your organization against the most sophisticated cyber threats.',
+
     solution1Title: 'Risk Assessment and Management',
     solution1Description: 'We thoroughly identify vulnerabilities in your systems, applications, and processes',
     solution1Why: 'For a clear understanding of your weak points and how to strengthen them',
