@@ -195,15 +195,15 @@ export default function NewsPage() {
               .map(cat => {
                 const displayMap: Record<string, { label: string }> = {
                   'malware': { label: t('malware') },
-                  'vulnerabilidades': { label: t('vulnerabilidades') },
-                  'ataques': { label: t('ataques') },
-                  'brechas de datos': { label: t('brechasDeDatos') },
-                  'regulación': { label: t('regulación') },
-                  'infraestructura crítica': { label: t('infraestructuraCrítica') },
-                  'empresas': { label: t('empresas') },
-                  'tecnología': { label: t('tecnología') },
-                  'educación': { label: t('educación') },
-                  'otros': { label: t('otros') }
+                  'vulnerabilidades': { label: t('vulnerabilities') },
+                  'ataques': { label: t('attacks') },
+                  'brechas de datos': { label: t('dataBreaches') },
+                  'regulación': { label: t('regulation') },
+                  'infraestructura crítica': { label: t('criticalInfrastructure') },
+                  'empresas': { label: t('companies') },
+                  'tecnología': { label: t('technology') },
+                  'educación': { label: t('education') },
+                  'otros': { label: t('others') }
                 };
                 const display = displayMap[cat as keyof typeof displayMap] || { label: t(cat) };
                 const selected = selectedCategory === cat;
