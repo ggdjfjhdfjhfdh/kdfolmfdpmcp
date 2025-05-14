@@ -205,7 +205,7 @@ export default function NewsPage() {
                   'educación': { label: t('education') },
                   'otros': { label: t('others') }
                 };
-                const display = displayMap[cat as keyof typeof displayMap] || { label: t(cat) };
+                const display = displayMap[cat as keyof typeof displayMap] || { label: cat.charAt(0).toUpperCase() + cat.slice(1) };
                 const selected = selectedCategory === cat;
                 return (
                   <button
