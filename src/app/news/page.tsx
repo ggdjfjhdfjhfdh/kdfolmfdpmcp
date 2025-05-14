@@ -1,6 +1,7 @@
 "use client";
 
 import NewsCard from '@/components/NewsCard';
+import JsonLd from '@/components/JsonLd';
 import NewsSidebar from '@/components/NewsSidebar';
 import { useState, useEffect } from 'react';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -155,8 +156,36 @@ export default function NewsPage() {
     );
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    headline: 'Cybersecurity News & Updates',
+    description: 'Latest cybersecurity news, threats, vulnerabilities, and industry updates.',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Sesecpro',
+      url: 'https://sesecpro.es'
+    },
+    url: 'https://sesecpro.es/news',
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: news.map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'NewsArticle',
+          headline: item.title,
+          description: item.description,
+          datePublished: item.dateIso || item.date,
+          url: item.link
+        }
+      }))
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row items-start bg-white min-h-screen w-full max-w-[100vw] overflow-x-hidden">
+      <JsonLd data={jsonLd} />
       <NewsSidebar
         news={news}
         selectedCategory={selectedCategory}

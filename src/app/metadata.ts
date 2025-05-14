@@ -1,8 +1,16 @@
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Sesecpro - Advanced Cybersecurity Solutions',
-  description: 'Your cybersecurity partner. Advanced, simple, and business-adapted solutions. Real security with cutting-edge technology.',
+  metadataBase: new URL('https://sesecpro.es'),
+  title: {
+    default: 'Sesecpro - Advanced Cybersecurity Solutions',
+    template: '%s | Sesecpro'
+  },
+  description: 'Your trusted cybersecurity partner. We provide advanced, simple, and business-adapted solutions with real-time threat monitoring and cutting-edge technology.',
+  keywords: ['cybersecurity', 'information security', 'cyber protection', 'threat detection', 'security consulting', 'GDPR compliance', 'penetration testing', 'security audit', 'incident response', 'risk assessment'],
+  authors: [{ name: 'Sesecpro' }],
+  creator: 'Sesecpro',
+  publisher: 'Sesecpro',
   icons: {
     icon: '/favicon.ico',
     // También puedes añadir versiones en diferentes tamaños
