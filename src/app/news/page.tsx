@@ -84,9 +84,7 @@ export default function NewsPage() {
   useEffect(() => {
     async function fetchNews() {
       try {
-        const apiUrl = process.env.NODE_ENV === 'production'
-          ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/news`
-          : 'http://localhost:3000/api/news';
+        const apiUrl = `/api/news`; // Corregido para usar ruta relativa
         const response = await fetch(apiUrl, { next: { revalidate: 900 } }); // 15 minutos de caché
         if (!response.ok) throw new Error('Error al obtener noticias');
         const data = await response.json();
