@@ -19,7 +19,7 @@ async function fetchNews(): Promise<{ news: NewsItem[] } | { error: string }> {
     // IMPORTANTE: En el servidor, necesitamos la URL completa.
     // Usamos localhost durante el desarrollo. En producción, esto debería ser la URL pública de tu app.
     const apiUrl = process.env.NODE_ENV === 'production'
-      ? `${process.env.NEXT_PUBLIC_SITE_URL}/api/news`
+      ? '/api/news'
       : 'http://localhost:3000/api/news';
 
     console.log(`Fetching news from: ${apiUrl}`);
