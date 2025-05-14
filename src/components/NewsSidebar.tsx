@@ -2,7 +2,7 @@ import React from 'react';
 import { useI18n } from '@/lib/i18n';
 
 interface NewsSidebarProps {
-  news: { category: string }[];
+  news: { category?: string }[];
   selectedCategory: string;
   onCategorySelect: (category: string) => void;
   dateFrom: string;
