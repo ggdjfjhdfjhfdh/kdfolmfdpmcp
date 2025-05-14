@@ -1,4 +1,5 @@
 import React from 'react';
+import { useI18n } from '@/lib/i18n';
 
 interface NewsSidebarProps {
   news: { category: string }[];
@@ -32,6 +33,7 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({
   setDateFrom,
   setDateTo
 }) => {
+  const t = useI18n();
   const uniqueCategories = Array.from(new Set(news.map(n => (n.category || 'otros').toLowerCase())));
   uniqueCategories.sort((a, b) => (a === 'otros' ? 1 : b === 'otros' ? -1 : a.localeCompare(b, 'es')));
 
@@ -40,9 +42,9 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({
       <div className="sticky top-4 md:top-8">
         {/* Filtro de fecha */}
         <div className="flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow px-4 py-5 mb-4">
-          <span className="text-base font-semibold text-gray-700 mb-2">Filtrar por fecha</span>
+          <span className="text-base font-semibold text-gray-700 mb-2">{t('filterByDate')}</span>
           <label className="flex items-center gap-2 text-gray-700 font-medium">
-            Desde:
+            {t('from')}: 
             <input
               type="date"
               className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
@@ -52,7 +54,7 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({
             />
           </label>
           <label className="flex items-center gap-2 text-gray-700 font-medium">
-            Hasta:
+            {t('to')}: 
             <input
               type="date"
               className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
@@ -65,9 +67,9 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({
         <hr className="my-3 border-gray-200" />
         <nav
           className="flex flex-col gap-2 bg-white border border-gray-200 rounded-xl shadow px-4 py-5"
-          aria-label="Filtrar por categoría"
+          aria-label={t('filterByCategory')}
         >
-          <span className="text-base font-semibold text-gray-700 mb-2">Filtrar por categoría</span>
+          <span className="block text-xs font-bold text-gray-500 tracking-widest uppercase mb-2">{t('filterByCategory')}</span>
           <button
             type="button"
             className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200 whitespace-nowrap shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-300 ${selectedCategory === '' ? 'bg-blue-600 text-white border-blue-600 scale-105' : 'bg-white border-gray-200 text-gray-700 hover:bg-blue-50 hover:border-blue-300'}`}
@@ -75,7 +77,7 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({
             aria-pressed={selectedCategory === ''}
             aria-current={selectedCategory === '' ? 'true' : undefined}
           >
-            Todas
+            {t('all')}
           </button>
           {uniqueCategories.map(cat => {
             const disp = categoryDisplay[cat] || { label: cat, icon: '📰' };

@@ -1,8 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
+import React from 'react';
+import { useI18n } from '@/lib/i18n';
 import Link from "next/link";
 
 export default function CookieConsent() {
+  const t = useI18n();
   const [visible, setVisible] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
   const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
@@ -48,7 +51,7 @@ export default function CookieConsent() {
           </svg>
         </div>
         <div className="flex-1 min-w-0">
-          <span className="text-gray-800 text-base font-medium block mb-1">Este sitio utiliza cookies</span>
+          <span className="text-gray-800 text-base font-medium block mb-1">{t('cookieConsent')}</span>
           <span className="text-gray-600 text-sm block mb-2">
             Utilizamos cookies propias y de terceros para analizar el uso de la web y mejorar tu experiencia. Consulta nuestra{' '}
             <Link href="/legal/cookies" className="underline text-blue-600 hover:text-blue-800 transition-colors">Política de Cookies</Link>.

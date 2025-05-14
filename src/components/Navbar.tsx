@@ -2,19 +2,22 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import React, { useState } from 'react';
+import React from 'react';
+import { useLanguage } from '../lib/LanguageContext';
+import { useI18n } from '../lib/i18n';
 
-const navItems = [
-  { name: 'Propósito', href: '/about' },
-  { name: 'Soluciones', href: '/solutions' },
-  { name: 'Noticias', href: '/news' },
-  { name: 'Contacto', href: '/contact' },
+const navKeys = [
+  { key: 'purpose', href: '/about', name: 'Sobre nosotros' },
+  { key: 'solutions', href: '/solutions', name: 'Soluciones' },
+  { key: 'news', href: '/news', name: 'Noticias' },
+  { key: 'contact', href: '/contact', name: 'Contacto' },
 ];
 
 export default function Navbar() {
+  const t = useI18n();
   const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [lang, setLang] = useState<'ES'|'EN'>('ES');
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const { lang, setLang } = useLanguage();
 
   return (
     <header className="bg-white shadow-lg sticky top-0 z-50 border-b border-gray-100 transition-all">
@@ -35,16 +38,16 @@ export default function Navbar() {
             </Link>
             {/* Menú desktop */}
             <nav className="hidden md:flex items-center gap-2" role="navigation" aria-label="Menú principal">
-              {navItems.map((item) => {
+              {navKeys.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 return (
                   <Link
-                    key={item.name}
+                    key={item.key}
                     href={item.href}
                     className={`relative px-4 py-2 text-gray-700 rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 transition-all duration-200 hover:text-blue-600 hover:bg-blue-50 group ${isActive ? 'text-blue-700' : ''}`}
                     aria-current={isActive ? 'page' : undefined}
                   >
-                    {item.name}
+                    {t(item.key as any)}
                     {/* Underline animada si activo */}
                     <span className={`absolute left-2 right-2 -bottom-1 h-0.5 rounded bg-blue-500 transition-all duration-300 ${isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'} group-hover:opacity-60 group-hover:scale-x-100`}></span>
                   </Link>
@@ -104,7 +107,7 @@ export default function Navbar() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            {navItems.map((item) => {
+            {navKeys.map((item) => {
               const isActive = pathname.startsWith(item.href);
               return (
                 <Link

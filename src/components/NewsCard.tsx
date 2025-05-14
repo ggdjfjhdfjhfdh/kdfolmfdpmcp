@@ -20,7 +20,7 @@ export default function NewsCard(props: NewsCardProps) {
       animate={{ opacity: 1, y: 0 }}
       className="rounded-xl bg-white shadow-lg border border-gray-200 overflow-hidden hover:shadow-2xl transition-all min-h-[260px] flex flex-col justify-between mb-8"
     >
-      <div className="p-8 flex flex-col h-full gap-4">
+      <div className="p-4 md:p-8 flex flex-col h-full gap-4">
         <div className="flex justify-between items-center mb-3">
           {/* Etiqueta de categoría con icono y color dinámico */}
           {(() => {
@@ -88,7 +88,7 @@ export default function NewsCard(props: NewsCardProps) {
           <span className="text-xs text-gray-500">{new Date(props.date).toLocaleDateString()}</span>
         </div>
         
-        <h3 className="text-2xl font-extrabold mb-2 text-gray-800 leading-tight font-serif hover:underline cursor-pointer">
+        <h3 className="text-lg md:text-2xl font-extrabold mb-2 text-gray-800 leading-tight font-serif hover:underline cursor-pointer">
           {props.rewrittenTitle || props.title}
         </h3>
         
@@ -96,7 +96,7 @@ export default function NewsCard(props: NewsCardProps) {
         
         <Link 
           href={`/article/${props.slug}`}
-          className="mt-auto px-5 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-full shadow transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 w-fit"
+          className="mt-auto px-5 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-full shadow transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 w-full md:w-fit text-center"
         >
           Leer completo
         </Link>

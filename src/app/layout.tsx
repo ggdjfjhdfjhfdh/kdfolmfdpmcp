@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   description: 'Soluciones integrales de ciberseguridad',
 };
 
+import { LanguageProvider } from "../lib/LanguageContext";
+
 export default function RootLayout({
   children,
 }: {
@@ -19,9 +21,11 @@ export default function RootLayout({
   return (
     <html lang="es" className={inter.className}>
       <body className="antialiased">
-        <CookieConsent />
-        <Navbar />
-        {children}
+        <LanguageProvider>
+          <CookieConsent />
+          <Navbar />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

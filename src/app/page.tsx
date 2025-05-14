@@ -19,8 +19,10 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 
+import { useI18n } from '@/lib/i18n';
+
 export default function HomePage(): React.ReactElement {
-  // ...hooks y lógica...
+  const t = useI18n();
 
   const [isClient, setIsClient] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -34,22 +36,22 @@ export default function HomePage(): React.ReactElement {
   // Cards de soluciones
   const solutionsCards = [
     {
-      title: 'Protección Integral',
-      description: 'Defensas multilayer contra amenazas digitales',
+      title: t('solution1Title'),
+      description: t('solution1Description'),
       icon: <ShieldCheckIcon className="h-8 w-8 text-white" />, 
       gradient: 'from-blue-500 to-cyan-400',
       border: 'group-hover:border-blue-500/30'
     },
     {
-      title: 'Monitoreo 24/7',
-      description: 'Vigilancia continua con inteligencia artificial',
+      title: t('solution2Title'),
+      description: t('solution2Description'),
       icon: <EyeIcon className="h-8 w-8 text-white" />, 
       gradient: 'from-blue-500 to-cyan-400',
       border: 'group-hover:border-blue-500/30'
     },
     {
-      title: 'Respuesta Rápida',
-      description: 'Contención inmediata de incidentes',
+      title: t('solution3Title'),
+      description: t('solution3Description'),
       icon: <BoltIcon className="h-8 w-8 text-white" />, 
       gradient: 'from-cyan-500 to-blue-400',
       border: 'group-hover:border-cyan-500/30'
@@ -99,17 +101,17 @@ export default function HomePage(): React.ReactElement {
         {/* Hero Content */}
         <section className="relative z-20 w-full max-w-4xl mx-auto flex flex-col items-center md:items-start text-center md:text-left px-4 pt-24 pb-20 animate-fade-in">
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 leading-tight">
-            Protege tu empresa con <span className="text-cyan-500">ciberseguridad inteligente</span>
+            {t('heroTitle1')} <span className="text-cyan-500">{t('heroTitle2')}</span>
           </h1>
           <p className="text-lg md:text-2xl text-gray-700 mb-8 max-w-2xl">
-            Soluciones avanzadas, simples y adaptadas a tu negocio. Seguridad real con tecnología de última generación.
+            {t('heroDescription')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto justify-center md:justify-start mb-8">
             <Link href="/contact" className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all text-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 flex items-center justify-center">
-              Pregúntanos
+              {t('askUs')}
             </Link>
             <Link href="/solutions" className="bg-white/90 hover:bg-gray-100 text-cyan-600 font-bold py-3 px-8 rounded-full border border-cyan-400 shadow transition-all text-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 flex items-center justify-center">
-              Ver soluciones
+              {t('seeSolutions')}
             </Link>
           </div>
 
@@ -148,47 +150,13 @@ export default function HomePage(): React.ReactElement {
       <section className="w-screen relative left-1/2 right-1/2 bg-white flex flex-col justify-center items-center px-4 py-16 text-center" style={{transform: 'translateX(-50%)', borderRadius: 0, marginTop: 0, marginBottom: 0}}>
         <div className="w-full max-w-4xl mx-auto space-y-8">
           <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-indigo-500 mb-6 drop-shadow-xl text-center">
-            Nuestra Misión
+            {t('missionTitle')}
           </h2>
           {[
-            {
-              texto: (
-                <>
-                  En un mundo digital donde las amenazas están en constante evolución, proteger tus{' '}
-                  <span className="font-bold text-blue-700 px-1.5 py-0.5 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-md">datos críticos</span> y{' '}
-                  <span className="font-bold text-blue-700 px-1.5 py-0.5 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-md">operaciones</span> se ha convertido en una prioridad para cualquier organización.
-                </>
-              ),
-              delay: 0.1,
-            },
-            {
-              texto: (
-                <>
-                  Nuestro equipo especializado implementa soluciones de seguridad{' '}
-                  <span className="font-bold text-blue-700 px-1.5 py-0.5 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-md">proactivas</span>, identificando vulnerabilidades antes de que sean explotadas y monitoreando amenazas en tiempo real.
-                </>
-              ),
-              delay: 0.2,
-            },
-            {
-              texto: (
-                <>
-                  Creemos firmemente en la{' '}
-                  <span className="font-bold text-blue-700 px-1.5 py-0.5 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-md">prevención estratégica</span> y en empoderar a tu equipo con{' '}
-                  <span className="font-bold text-blue-700 px-1.5 py-0.5 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-md">conocimientos prácticos</span> de ciberseguridad adaptados a tus necesidades específicas.
-                </>
-              ),
-              delay: 0.3,
-            },
-            {
-              texto: (
-                <>
-                  Nuestra misión es transformar la seguridad de un gasto necesario a un{' '}
-                  <span className="font-bold text-blue-700 px-1.5 py-0.5 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-md">activo diferenciador</span> que fortalezca tu posición competitiva en el mercado.
-                </>
-              ),
-              delay: 0.4,
-            },
+            { texto: t('mission1'), delay: 0.1 },
+            { texto: t('mission2'), delay: 0.2 },
+            { texto: t('mission3'), delay: 0.3 },
+            { texto: t('mission4'), delay: 0.4 },
           ].map((item, idx) => (
             <motion.p
               key={idx}
@@ -215,10 +183,10 @@ export default function HomePage(): React.ReactElement {
         <div className="relative z-20 w-full px-4 md:px-12">
           <div className="text-center mb-20">
             <h2 className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-indigo-500 mb-8 drop-shadow-2xl text-center">
-              Nuestras Soluciones
+              {t('solutionsTitle')}
             </h2>
             <p className="text-xl text-white max-w-3xl mx-auto mb-8 text-center">
-              Soluciones avanzadas, simples y adaptadas a tu negocio. Seguridad real con tecnología de última generación.
+              {t('solutionsSubtitle')}
             </p>
           </div>
 
@@ -252,16 +220,16 @@ export default function HomePage(): React.ReactElement {
       <section className="w-screen relative left-1/2 right-1/2 bg-white flex flex-col justify-center items-center px-4 py-16 text-center mb-0 overflow-hidden" style={{transform: 'translateX(-50%)', borderRadius: 0, marginTop: 0}}>
         <div className="w-full flex flex-col items-center justify-center">
           <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-indigo-500 mb-6 drop-shadow-xl">
-            ¿Listo para fortalecer tu seguridad digital?
+            {t('ctaTitle')}
           </h2>
           <p className="text-xl text-gray-700 w-full text-center mb-8">
-            Contáctanos hoy y descubre cómo podemos proteger los activos más valiosos de tu negocio
+            {t('ctaSubtitle')}
           </p>
           <Link 
             href="/contact" 
             className="bg-cyan-500 hover:bg-cyan-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all text-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 flex items-center justify-center"
           >
-            Habla con un experto
+            {t('ctaButton')}
           </Link>
         </div>
       </section>
@@ -271,7 +239,7 @@ export default function HomePage(): React.ReactElement {
           {/* Branding & Socials */}
           <div className="flex flex-col items-center md:items-start gap-5 w-full md:w-auto">
             <p className="text-gray-300 text-sm text-center md:text-left max-w-xs">
-              Protección digital con tecnología de última generación.<br/>Tu seguridad, nuestra prioridad.
+              {t('footerSlogan1')}<br/>{t('footerSlogan2')}
             </p>
             <div className="flex gap-6 mt-2">
               <a href="https://instagram.com/sesecpro" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-cyan-400 transition-all drop-shadow-[0_0_8px_rgba(34,211,238,0.5)]" aria-label="Instagram">
@@ -292,20 +260,20 @@ export default function HomePage(): React.ReactElement {
           {/* Navegación */}
           <nav className="flex flex-col items-center gap-6 md:gap-4 md:items-end w-full md:w-auto mt-8 md:mt-0">
             <div className="flex gap-6 text-sm font-normal">
-              <a href="/" className="text-gray-400 hover:text-cyan-400 transition-colors">Propósito</a>
-              <a href="/solutions" className="text-gray-400 hover:text-cyan-400 transition-colors">Soluciones</a>
-              <a href="/news" className="text-gray-400 hover:text-cyan-400 transition-colors">Noticias</a>
-              <a href="/contact" className="text-gray-400 hover:text-cyan-400 transition-colors">Contacto</a>
+              <a href="/" className="text-gray-400 hover:text-cyan-400 transition-colors">{t('navPurpose')}</a>
+              <a href="/solutions" className="text-gray-400 hover:text-cyan-400 transition-colors">{t('navSolutions')}</a>
+              <a href="/news" className="text-gray-400 hover:text-cyan-400 transition-colors">{t('navNews')}</a>
+              <a href="/contact" className="text-gray-400 hover:text-cyan-400 transition-colors">{t('navContact')}</a>
             </div>
             <div className="flex flex-wrap gap-6 mt-4 justify-center md:justify-end">
-              <a href="/legal/privacy-policy" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">Política de Privacidad</a>
-              <a href="/legal/terms" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">Términos y Condiciones</a>
-              <a href="/legal/cookies" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">Política de Cookies</a>
+              <a href="/legal/privacy-policy" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">{t('privacyPolicy')}</a>
+              <a href="/legal/terms" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">{t('termsAndConditions')}</a>
+              <a href="/legal/cookies" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">{t('cookiesPolicy')}</a>
             </div>
           </nav>
         </div>
         <div className="mt-10 text-center text-gray-500 text-xs">
-          &copy; {new Date().getFullYear()} Se.Sec.Pro. Todos los derechos reservados.
+          &copy; {new Date().getFullYear()} Se.Sec.Pro. {t('allRightsReserved')}
         </div>
       </footer>
     </div>
