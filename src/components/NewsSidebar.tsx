@@ -38,31 +38,33 @@ const NewsSidebar: React.FC<NewsSidebarProps> = ({
   uniqueCategories.sort((a, b) => (a === 'otros' ? 1 : b === 'otros' ? -1 : a.localeCompare(b, 'es')));
 
   return (
-    <aside className="hidden md:block w-64 shrink-0 mb-6 md:mb-0 p-2 sm:p-0">
-      <div className="sticky top-4 md:top-8">
+    <aside className="md:w-64 md:shrink-0 mb-6 md:mb-0 p-2 sm:p-0 w-full">
+      <div className="md:sticky md:top-8 flex flex-col gap-4">
         {/* Filtro de fecha */}
-        <div className="flex flex-col gap-2 bg-white border border-gray-200 rounded-lg sm:rounded-xl shadow px-3 sm:px-4 py-4 sm:py-5 mb-4">
+        <div className="flex flex-col gap-3 bg-white border border-gray-200 rounded-lg sm:rounded-xl shadow px-3 sm:px-4 py-4 sm:py-5">
           <span className="text-base font-semibold text-gray-700 mb-2">{t('filterByDate')}</span>
-          <label className="flex items-center gap-2 text-gray-700 font-medium">
-            {t('from')}: 
-            <input
-              type="date"
-              className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-              value={dateFrom}
-              onChange={e => setDateFrom(e.target.value)}
-              max={dateTo || undefined}
-            />
-          </label>
-          <label className="flex items-center gap-2 text-gray-700 font-medium">
-            {t('to')}: 
-            <input
-              type="date"
-              className="border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
-              value={dateTo}
-              onChange={e => setDateTo(e.target.value)}
-              min={dateFrom || undefined}
-            />
-          </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm text-gray-600">{t('from')}:</span>
+              <input
+                type="date"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+                value={dateFrom}
+                onChange={e => setDateFrom(e.target.value)}
+                max={dateTo || undefined}
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-sm text-gray-600">{t('to')}:</span>
+              <input
+                type="date"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 transition"
+                value={dateTo}
+                onChange={e => setDateTo(e.target.value)}
+                min={dateFrom || undefined}
+              />
+            </div>
+          </div>
         </div>
         <hr className="my-3 border-gray-200" />
         <nav

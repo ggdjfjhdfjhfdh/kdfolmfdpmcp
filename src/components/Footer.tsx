@@ -13,9 +13,9 @@ interface FooterProps {
 }
 
 const defaultLinks: FooterLink[] = [
-  { label: 'Aviso Legal', href: '/legal' },
-  { label: 'Política de Privacidad', href: '/privacy' },
-  { label: 'Política de Cookies', href: '/cookies' }
+  { label: 'Aviso Legal', href: '/legal/terms' },
+  { label: 'Política de Privacidad', href: '/legal/privacy' },
+  { label: 'Política de Cookies', href: '/legal/cookies' }
 ];
 
 const Footer: React.FC<FooterProps> = ({ bgColor = 'bg-white', links = defaultLinks }) => {

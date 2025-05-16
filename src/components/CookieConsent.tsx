@@ -54,7 +54,7 @@ export default function CookieConsent() {
           <span className="text-gray-800 text-base font-medium block mb-1">{t('cookieConsent')}</span>
           <span className="text-gray-600 text-sm block mb-2">
             Utilizamos cookies propias y de terceros para analizar el uso de la web y mejorar tu experiencia. Consulta nuestra{' '}
-            <Link href="/legal/cookies" className="underline text-blue-600 hover:text-blue-800 transition-colors">Política de Cookies</Link>.
+            <Link href="/legal/cookies-policy" className="underline text-blue-600 hover:text-blue-800 transition-colors">Política de Cookies</Link>.
           </span>
           {showConfig && (
             <form
@@ -134,4 +134,3 @@ export default function CookieConsent() {
     </>
   );
 }
-

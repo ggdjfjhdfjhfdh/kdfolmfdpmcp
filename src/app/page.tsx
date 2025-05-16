@@ -266,7 +266,7 @@ export default function HomePage(): React.ReactElement {
               <a href="/contact" className="text-gray-400 hover:text-cyan-400 transition-colors">{t('navContact')}</a>
             </div>
             <div className="flex flex-wrap gap-6 mt-4 justify-center md:justify-end">
-              <a href="/legal/privacy-policy" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">{t('privacyPolicy')}</a>
+              <a href="/legal/privacy" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">{t('privacyPolicy')}</a>
               <a href="/legal/terms" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">{t('termsAndConditions')}</a>
               <a href="/legal/cookies" className="text-gray-400 hover:text-cyan-300 text-xs underline underline-offset-2 transition-colors">{t('cookiesPolicy')}</a>
             </div>
