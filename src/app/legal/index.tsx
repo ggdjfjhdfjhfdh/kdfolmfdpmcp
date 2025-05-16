@@ -1,6 +1,6 @@
-import PrivacyPolicy from './privacy-policy';
-import Terms from './terms';
-import CookiesPolicy from './cookies';
+import PrivacyPolicy from './privacy/page';
+import Terms from './terms/page';
+import CookiesPolicy from './cookies/page';
 
 export default function LegalIndex() {
   return (
